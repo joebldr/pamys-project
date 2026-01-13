@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTag, faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTag, faCopy } from '@fortawesome/free-solid-svg-icons';
 import fondoLoginImg from './assets/fondologin.jpg';
 
-// --- IMPORTACIÓN DE COMPONENTES (Clean Code) ---
+// --- IMPORTACIÓN DE COMPONENTES ---
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
@@ -40,6 +40,8 @@ function App() {
 
   // Referencia
   const cuponesRef = useRef(null);
+  
+  // URL de tu API
   const API = "https://pamys-project.onrender.com/api";
 
   const fetchData = async () => {
@@ -104,15 +106,30 @@ function App() {
 
   const cerrarSesion = () => { localStorage.clear(); setIsAdmin(false); setSeccion('inicio'); window.location.reload(); };
 
-  // CRUD Helper
+  // --- CRUD HELPER INTELIGENTE (POST y PUT) ---
   const guardarItem = async (endpoint, data, setForm, initialForm) => {
-    await fetch(`${API}/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token') },
-        body: JSON.stringify(data)
-    });
-    setForm(initialForm);
-    fetchData();
+    const token = localStorage.getItem('token');
+    
+    // Si data tiene _id, es una EDICIÓN (PUT), si no, es CREACIÓN (POST)
+    const esEdicion = !!data._id;
+    const method = esEdicion ? 'PUT' : 'POST';
+    const url = esEdicion ? `${API}/${endpoint}/${data._id}` : `${API}/${endpoint}`;
+
+    try {
+        const res = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': token },
+            body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            alert(esEdicion ? "¡Actualizado con éxito!" : "¡Creado con éxito!");
+            setForm(initialForm); // Limpia formulario
+            fetchData(); // Recarga datos
+        } else {
+            alert("Error al guardar");
+        }
+    } catch (error) { console.error("Error:", error); }
   };
 
   const borrarItem = async (id, tipo) => {

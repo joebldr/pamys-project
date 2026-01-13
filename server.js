@@ -7,14 +7,13 @@ const helmet = require('helmet');
 const axios = require('axios');
 require('dotenv').config();
 
-// --- CORRECCIÓN 1: RUTA DE IMPORTACIÓN ---
-// Según tu foto, la carpeta 'models' está al lado de 'server.js'
+// IMPORTAMOS LOS MODELOS (Ruta corregida)
 const { Product, Promotion, Coupon, User } = require('./models/Schemas');
 
 const app = express();
 
-// --- CORRECCIÓN 2: SEGURIDAD RELAJADA ---
-// Esto permite que carguen imágenes externas y locales sin bloqueo
+// --- SEGURIDAD RELAJADA ---
+// Permite cargar imágenes externas y locales sin bloqueo
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
@@ -24,7 +23,6 @@ app.use(cors());
 app.use(express.json());
 
 // --- ARCHIVOS ESTÁTICOS ---
-// Servimos la carpeta 'dist' que crea Vite
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Conexión a Base de Datos
@@ -66,25 +64,47 @@ app.post('/api/login', async (req, res) => {
     } catch (e) { res.status(500).json({ msg: "Error servidor" }); }
 });
 
-// Productos
+// --- PRODUCTOS (MENÚ) ---
 app.get('/api/products', async (req, res) => res.json(await Product.find()));
+
 app.post('/api/products', verificarToken, async (req, res) => {
     await new Product(req.body).save(); res.json({msg:"OK"});
 });
+
+// [NUEVO] RUTA PARA EDITAR PRODUCTO (PUT)
+app.put('/api/products/:id', verificarToken, async (req, res) => {
+    try {
+        await Product.findByIdAndUpdate(req.params.id, req.body);
+        res.json({ msg: "Producto actualizado" });
+    } catch (e) { res.status(500).json({ msg: "Error al actualizar" }); }
+});
+
 app.delete('/api/products/:id', verificarToken, async (req, res) => {
     await Product.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
 });
 
-// Promociones
+
+// --- PROMOCIONES (INICIO) ---
 app.get('/api/promotions', async (req, res) => res.json(await Promotion.find()));
+
 app.post('/api/promotions', verificarToken, async (req, res) => {
     await new Promotion(req.body).save(); res.json({msg:"OK"});
 });
+
+// [NUEVO] RUTA PARA EDITAR PROMOCIÓN (PUT)
+app.put('/api/promotions/:id', verificarToken, async (req, res) => {
+    try {
+        await Promotion.findByIdAndUpdate(req.params.id, req.body);
+        res.json({ msg: "Promoción actualizada" });
+    } catch (e) { res.status(500).json({ msg: "Error al actualizar" }); }
+});
+
 app.delete('/api/promotions/:id', verificarToken, async (req, res) => {
     await Promotion.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
 });
 
-// Cupones
+
+// --- CUPONES ---
 app.get('/api/coupons', async (req, res) => res.json(await Coupon.find()));
 app.post('/api/coupons', verificarToken, async (req, res) => {
     try { await new Coupon(req.body).save(); res.json({msg:"OK"}); }
@@ -94,7 +114,8 @@ app.delete('/api/coupons/:id', verificarToken, async (req, res) => {
     await Coupon.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
 });
 
-// Trello
+
+// --- TRELLO ---
 app.post('/api/order/trello', async (req, res) => {
     const { cliente, carrito, total } = req.body;
     let descripcion = `👤 **Cliente:** ${cliente}\n💰 **Total:** $${total}\n\n🛒 **Detalle del Pedido:**\n`;
@@ -116,6 +137,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
+// --- INICIAR SERVIDOR ---
 app.listen(process.env.PORT || 10000, () => {
     console.log(`🚀 Puerto ${process.env.PORT || 10000}`);
     const createAdmin = async () => {
