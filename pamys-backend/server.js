@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -108,6 +109,18 @@ app.post('/api/order/trello', async (req, res) => {
         res.status(500).json({ msg: "Error al conectar con Trello" });
     }
 });
+
+// --- ESTO HACE QUE SE VEA TU PÁGINA EN RENDER ---
+
+// 1. Decirle a Express que la carpeta 'dist' tiene los archivos visuales
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// 2. Cualquier ruta que no sea API, manda a la página de React
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// (Aquí abajo sigue tu línea de // Iniciar Servidor...)
 
 // Iniciar Servidor
 app.listen(process.env.PORT || 3000, () => {
