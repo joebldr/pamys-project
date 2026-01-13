@@ -44,18 +44,18 @@ const CartSidebar = ({
     }
 
     // 3. Preparar mensaje de WhatsApp (Bien formateado)
-    let mensaje = `👋 Hola Pamy's! Soy *${nombre}*.\n`;
-    mensaje += `📍 *Dirección:* ${direccion}\n`;
-    mensaje += `💳 *Pago:* ${metodoPago}\n`;
+    let mensaje = `● Hola Pamy's! Soy *${nombre}*.\n`;
+    mensaje += `● *Dirección:* ${direccion}\n`;
+    mensaje += `● *Pago:* ${metodoPago}\n`;
     mensaje += `--------------------------------\n`;
-    mensaje += `📝 *Mi Pedido:*\n`;
+    mensaje += `■ *Mi Pedido:*\n`;
     
     carrito.forEach(p => {
-        mensaje += `🍗 1x ${p.nombre} - $${p.precio}\n`;
+        mensaje += `⦿ 1x ${p.nombre} - $${p.precio}\n`;
     });
     
     if (cuponAplicado) mensaje += `\n🎟 Cupón: ${cuponAplicado.codigo}`;
-    mensaje += `\n💰 *TOTAL A PAGAR: $${total}*`;
+    mensaje += `\n● *TOTAL A PAGAR: $${total}*`;
     
     // Si eligió transferencia, agregamos una nota extra
     if (metodoPago === 'Transferencia') {
