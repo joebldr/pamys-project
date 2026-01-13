@@ -151,7 +151,7 @@ function App() {
 
             <div id="seccion-cupones" ref={cuponesRef} style={{textAlign:'center', marginBottom:'40px'}}>
                 <h2 className="section-title">Nuestros Cupones</h2>
-                <p className="section-subtitle">Haz clic para copiar el código</p>
+                <p className="section-subtitle"> Cupones válidos hasta el 14/ENE/2026 a las 7:00 AM </p>
                 <div className="coupons-grid">
                 {cupones.map(c => (
                     <div key={c._id} className="coupon-card" onClick={() => copiarCupon(c.codigo)}>
@@ -169,6 +169,7 @@ function App() {
 
             <div className="promotions-section">
                 <h2 className="section-title">Promociones y Paquetes</h2>
+                <p className="section-subtitle">Llévate más pollo por menos precio 🍗🤑 </p>
                 <div className="products-grid">
                     {promociones.map(p => (
                     <div key={p._id} className="product-card promo-style">
