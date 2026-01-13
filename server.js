@@ -3,24 +3,27 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const helmet = require('helmet'); // <--- ESTA ES LA LÍNEA QUE TE FALTABA
-const axios = require('axios');   // Para lo de Trello
+const helmet = require('helmet');
+const axios = require('axios');
 require('dotenv').config();
 
-// IMPORTAMOS LOS MODELOS
+// --- CORRECCI�N AQU�: Quitamos 'pamys-backend' de la ruta ---
 const { Product, Promotion, Coupon, User } = require('./models/Schemas');
 
 const app = express();
 
-// --- SEGURIDAD Y CONFIGURACIÓN ---
-app.use(helmet()); // Ahora sí va a funcionar porque ya lo importamos arriba
+// --- SEGURIDAD Y CONFIGURACI�N ---
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Conexión a Base de Datos
+// Servir archivos est�ticos (Frontend)
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Conexi�n a Base de Datos
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ DB Conectada'))
-    .catch(err => console.error('❌ Error DB:', err));
+    .then(() => console.log('? DB Conectada'))
+    .catch(err => console.error('? Error DB:', err));
 
 // --- MIDDLEWARE DE SEGURIDAD (JWT) ---
 const verificarToken = (req, res, next) => {
@@ -30,7 +33,7 @@ const verificarToken = (req, res, next) => {
         const verificado = jwt.verify(token, process.env.JWT_SECRET);
         req.user = verificado;
         next();
-    } catch (error) { res.status(400).json({ msg: 'Token no válido' }); }
+    } catch (error) { res.status(400).json({ msg: 'Token no v�lido' }); }
 };
 
 // --- RUTAS (ENDPOINTS) ---
@@ -39,11 +42,11 @@ const verificarToken = (req, res, next) => {
 app.post('/api/register', async (req, res) => {
     try { 
         const existe = await User.findOne({ user: req.body.user });
-        if (existe) return res.status(400).json({ msg: "Usuario ya existe" });
+        if (existe) return res.status(400).json({ msg: 'Usuario ya existe' });
         const nuevo = new User(req.body); 
         await nuevo.save(); 
-        res.json({ msg: "OK" }); 
-    } catch (e) { res.status(400).json({ msg: "Error al registrar" }); }
+        res.json({ msg: 'OK' }); 
+    } catch (e) { res.status(400).json({ msg: 'Error al registrar' }); }
 });
 
 app.post('/api/login', async (req, res) => {
@@ -52,88 +55,82 @@ app.post('/api/login', async (req, res) => {
         const found = await User.findOne({ user, pass });
         if (!found) return res.status(400).json({ msg: 'Credenciales incorrectas' });
         const token = jwt.sign({ id: found._id, role: found.role }, process.env.JWT_SECRET);
-        res.json({ token, role: found.role, msg: "Login exitoso" });
-    } catch (e) { res.status(500).json({ msg: "Error servidor" }); }
+        res.json({ token, role: found.role, msg: 'Login exitoso' });
+    } catch (e) { res.status(500).json({ msg: 'Error servidor' }); }
 });
 
-// Productos (Menú)
+// Productos (Men�)
 app.get('/api/products', async (req, res) => res.json(await Product.find()));
 app.post('/api/products', verificarToken, async (req, res) => {
-    await new Product(req.body).save(); res.json({msg:"OK"});
+    await new Product(req.body).save(); res.json({msg:'OK'});
 });
 app.delete('/api/products/:id', verificarToken, async (req, res) => {
-    await Product.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
+    await Product.findByIdAndDelete(req.params.id); res.json({msg:'OK'});
 });
 
 // Promociones (Inicio)
 app.get('/api/promotions', async (req, res) => res.json(await Promotion.find()));
 app.post('/api/promotions', verificarToken, async (req, res) => {
-    await new Promotion(req.body).save(); res.json({msg:"OK"});
+    await new Promotion(req.body).save(); res.json({msg:'OK'});
 });
 app.delete('/api/promotions/:id', verificarToken, async (req, res) => {
-    await Promotion.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
+    await Promotion.findByIdAndDelete(req.params.id); res.json({msg:'OK'});
 });
 
 // Cupones
 app.get('/api/coupons', async (req, res) => res.json(await Coupon.find()));
 app.post('/api/coupons', verificarToken, async (req, res) => {
-    try { await new Coupon(req.body).save(); res.json({msg:"OK"}); }
-    catch (e) { res.status(400).json({msg:"Error"}); }
+    try { await new Coupon(req.body).save(); res.json({msg:'OK'}); }
+    catch (e) { res.status(400).json({msg:'Error'}); }
 });
 app.delete('/api/coupons/:id', verificarToken, async (req, res) => {
-    await Coupon.findByIdAndDelete(req.params.id); res.json({msg:"OK"});
+    await Coupon.findByIdAndDelete(req.params.id); res.json({msg:'OK'});
 });
 
 // --- RUTA NUEVA: TRELLO ---
 app.post('/api/order/trello', async (req, res) => {
     const { cliente, carrito, total } = req.body;
 
-    let descripcion = `👤 **Cliente:** ${cliente}\n💰 **Total:** $${total}\n\n🛒 **Detalle del Pedido:**\n`;
+    let descripcion = '?? **Cliente:** ' + cliente + '\n?? **Total:** $' + total + '\n\n?? **Detalle del Pedido:**\n';
     carrito.forEach(item => {
-        descripcion += `- ${item.nombre} ($${item.precio})\n`;
+        descripcion += '- ' + item.nombre + ' ($' + item.precio + ')\n';
     });
-    descripcion += `\n🕒 Hora: ${new Date().toLocaleTimeString()}`;
+    descripcion += '\n?? Hora: ' + new Date().toLocaleTimeString();
 
     try {
-        const url = `https://api.trello.com/1/cards?idList=${process.env.TRELLO_LIST_ID}&key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}`;
+        const url = 'https://api.trello.com/1/cards?idList=' + process.env.TRELLO_LIST_ID + '&key=' + process.env.TRELLO_KEY + '&token=' + process.env.TRELLO_TOKEN;
         
         await axios.post(url, {
-            name: `Pedido de ${cliente} - $${total}`,
+            name: 'Pedido de ' + cliente + ' - $' + total,
             desc: descripcion,
             pos: 'top'
         });
 
-        res.json({ msg: "Pedido enviado a cocina (Trello)" });
+        res.json({ msg: 'Pedido enviado a cocina (Trello)' });
     } catch (error) {
-        console.error("Error Trello:", error.response ? error.response.data : error.message);
-        res.status(500).json({ msg: "Error al conectar con Trello" });
+        console.error('Error Trello:', error.response ? error.response.data : error.message);
+        res.status(500).json({ msg: 'Error al conectar con Trello' });
     }
 });
 
-// --- ESTO HACE QUE SE VEA TU PÁGINA EN RENDER ---
-
-// --- ESTE ES EL BLOQUE CORRECTO ---
-// Asegúrate de que no diga "pamys-frontend" ni "pamys-backend"
-
-app.use(express.static(path.join(__dirname, 'dist')));
-
+// --- IMPORTANTE: RUTAS DE REACT AL FINAL ---
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// (Aquí abajo sigue tu línea de // Iniciar Servidor...)
-
 // Iniciar Servidor
-app.listen(process.env.PORT || 3000, () => {
-    console.log(`🚀 Puerto ${process.env.PORT || 3000}`);
+app.listen(process.env.PORT || 10000, () => {
+    console.log('?? Server running on port ' + (process.env.PORT || 10000));
+    
+    // Crear admin por defecto si no existe
     const createAdmin = async () => {
         try {
             const adminExists = await User.findOne({ user: 'admin' });
             if (!adminExists) {
                 await User.create({ user: 'admin', pass: '123456', role: 'admin' });
-                console.log('👑 Admin creado: admin / 123456');
+                console.log('?? Admin creado: admin / 123456');
             }
-        } catch (e) { console.error("Error creando admin", e); }
+        } catch (e) { console.error('Error creando admin', e); }
     };
     createAdmin();
 });
