@@ -112,10 +112,11 @@ app.post('/api/order/trello', async (req, res) => {
 
 // --- ESTO HACE QUE SE VEA TU PÁGINA EN RENDER ---
 
-// 1. Decirle a Express que la carpeta 'dist' tiene los archivos visuales
+// --- ESTE ES EL BLOQUE CORRECTO ---
+// Asegúrate de que no diga "pamys-frontend" ni "pamys-backend"
+
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// 2. Cualquier ruta que no sea API, manda a la página de React
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
