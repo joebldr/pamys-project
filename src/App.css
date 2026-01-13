@@ -165,16 +165,30 @@ button, input, select, textarea {
 
 /* --- PRODUCTOS --- */
 .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    /* CAMBIO: Usamos Flexbox en lugar de Grid para centrar siempre */
+    display: flex;
+    flex-wrap: wrap; /* Permite que bajen a la siguiente línea si no caben */
+    justify-content: center; /* ¡ESTO ES LA CLAVE! Centra todo horizontalmente */
     gap: 35px;
+    padding: 20px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .product-card {
-    background: white; border-radius: 15px; overflow: hidden;
+    background: white; 
+    border-radius: 15px; 
+    overflow: hidden;
     box-shadow: var(--shadow-card);
-    transition: 0.3s; display: flex; flex-direction: column;
+    transition: 0.3s; 
+    display: flex; 
+    flex-direction: column;
+    
+    /* CAMBIO: Le damos un ancho fijo/flexible a la tarjeta para que Flexbox sepa su tamaño */
+    width: 320px; 
+    max-width: 100%; /* Para que no rompa en celulares muy pequeños */
 }
+
 .product-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
 .product-card img { width: 100%; height: 220px; object-fit: cover; }
 
