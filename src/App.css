@@ -1,3 +1,6 @@
+/* --- 1. IMPORTACIÓN DE FUENTE GOOGLE (Para que se vea en iPhone) --- */
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600;700&display=swap');
+
 :root {
     --primary: #ff8c00; /* Naranja fuerte */
     --primary-hover: #e67e00;
@@ -5,13 +8,18 @@
     --text-main: #333;
     --white: #ffffff;
     --shadow-card: 0 5px 15px rgba(0,0,0,0.08);
+    /* Colores para el Admin */
+    --color-edit: #3498db;
+    --color-update: #27ae60;
+    --color-delete: #e74c3c;
+    --color-cancel: #7f8c8d;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body { 
-    /* AQUÍ ESTÁ EL CAMBIO DE FUENTE */
-    font-family: "Epunda Slab", serif;
+    /* --- 2. USO DE LA FUENTE COMPATIBLE --- */
+    font-family: 'Zilla Slab', serif;
     background: var(--bg-body); 
     color: var(--text-main); 
     min-height: 100vh;
@@ -20,7 +28,7 @@ body {
 
 /* Aseguramos que los botones e inputs también usen la fuente */
 button, input, select, textarea {
-    font-family: "Epunda Slab", serif;
+    font-family: 'Zilla Slab', serif;
 }
 
 /* --- HEADER --- */
@@ -237,7 +245,7 @@ button, input, select, textarea {
 }
 .btn-main:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-/* --- ADMIN --- */
+/* --- ADMIN (Estilos mejorados) --- */
 .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .admin-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
 .panel-box { background: white; padding: 25px; border-radius: 15px; box-shadow: var(--shadow-card); }
@@ -245,9 +253,12 @@ button, input, select, textarea {
 
 .item-mini { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
 
+.acciones-mini { display: flex; gap: 8px; }
+
+/* Botón Borrar (Icono) */
 .btn-icon-delete {
     background: #ffebee; 
-    color: #d32f2f;
+    color: var(--color-delete);
     border: 1px solid #ffcdd2;
     width: 32px; height: 32px; 
     border-radius: 50%;
@@ -255,9 +266,35 @@ button, input, select, textarea {
     transition: 0.2s;
     display: flex; align-items: center; justify-content: center;
 }
-.btn-icon-delete:hover { background: #d32f2f; color: white; transform: rotate(90deg); }
+.btn-icon-delete:hover { background: var(--color-delete); color: white; }
 
-.btn-delete { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+/* Botón Editar (Icono) */
+.btn-icon-edit {
+    background: #eaf6fd;
+    color: var(--color-edit);
+    border: 1px solid #d6eaf8;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-icon-edit:hover { background: var(--color-edit); color: white; }
+
+.btn-delete { background: var(--color-delete); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+/* Botones del Formulario Admin */
+.form-actions { display: flex; gap: 10px; margin-top: 10px; }
+.btn-update { 
+    flex: 1; background: var(--color-update); color: white; 
+    padding: 14px; border: none; border-radius: 10px; 
+    font-weight: bold; cursor: pointer; font-size: 1rem;
+}
+.btn-cancel { 
+    background: var(--color-cancel); color: white; 
+    padding: 14px; border: none; border-radius: 10px; 
+    font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
 
 /* --- CART --- */
 .cart-sidebar {
