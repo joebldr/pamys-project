@@ -40,7 +40,7 @@ function App() {
 
   // Referencia
   const cuponesRef = useRef(null);
-  const API = "http://localhost:3000/api";
+  const API = "https://pamys-project.onrender.com/api";
 
   const fetchData = async () => {
     try {
