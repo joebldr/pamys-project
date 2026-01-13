@@ -8,17 +8,22 @@ const ProductSchema = new mongoose.Schema({
     categoria: String
 });
 
+// --- CORRECCIÓN 1: Cambiamos 'titulo' por 'nombre' ---
+// Ahora coincide con lo que envía tu Frontend (AdminPanel)
 const PromotionSchema = new mongoose.Schema({
-    titulo: String,
+    nombre: String, 
     desc: String,
     precio: Number,
     img: String
 });
 
+// --- CORRECCIÓN 2: Agregamos 'tipo' ---
+// Para saber si el descuento es '%' o '$'
 const CouponSchema = new mongoose.Schema({
     codigo: String,
     descuento: Number,
-    activo: Boolean
+    activo: Boolean,
+    tipo: String 
 });
 
 const UserSchema = new mongoose.Schema({
